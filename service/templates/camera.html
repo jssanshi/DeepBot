@@ -1,0 +1,119 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <title>Live Streaming</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    body {
+      font-family: "Helvetica Neue", Helvetica, Arial, sans-serif;
+      background-color: #f5f5f5;
+      display: flex;
+      flex-direction: column;
+      min-height: 100vh;
+    }
+
+    .header {
+      height: 50px;
+      background-color: #000;
+      color: #fff;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      font-size: 20px;
+      font-weight: bold;
+    }
+
+    .video-container {
+      background-color: #000;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+    }
+
+    .video-container img {
+      max-width: 100%;
+      height: auto;
+    }
+
+    .output-section {
+      background-color: #eaeaea;
+      display: flex;
+      justify-content: center;
+      width: 100%;
+      padding: 10px 10px;
+    }
+
+    .output-box {
+      background-color: #ffffff;
+      padding: 10px;
+      border-radius: 8px;
+      box-shadow: 0 0 8px rgba(0, 0, 0, 0.05);
+      font-size: 16px;
+      color: #333;
+      width: 100%;
+      max-width: 800px;
+    }
+
+    .output-title {
+      font-weight: bold;
+      font-size: 16px;
+      color: #333;
+      margin-bottom: 10px;
+    }
+
+    @media (max-width: 600px) {
+      .header {
+        font-size: 18px;
+      }
+
+      .output-box {
+        font-size: 14px;
+        padding: 15px;
+      }
+
+      .output-title {
+        font-size: 14px;
+      }
+    }
+  </style>
+</head>
+<body>
+
+<!-- 顶部标题 -->
+<div class="header">DeepBot</div>
+
+<!-- 视频流区域 -->
+<div class="video-container">
+  <img src="{{ url_for('video_feed') }}" alt="视频流">
+</div>
+
+<!-- 输出区域 -->
+<div class="output-section">
+  <div class="output-box">
+    <div class="output-title">识别物体</div>
+    <div id="model-output">等待识别结果...</div>
+  </div>
+</div>
+
+<!-- 实时结果拉取 -->
+<!--<script>
+  setInterval(() => {
+    fetch('/model_output')
+            .then(res => res.text())
+            .then(data => {
+              document.getElementById('model-output').innerText = data;
+            })
+            .catch(err => console.error('无法获取识别结果', err));
+  }, 1000);
+</script>-->
+
+</body>
+</html>
