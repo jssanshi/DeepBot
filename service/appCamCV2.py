@@ -4,18 +4,18 @@ import cv2
  
 app = Flask(__name__)
 
-camera = cv2.VideoCapture(0)
-# 可尝试设置采集格式为 MJPEG（更兼容）
-camera.set(cv2.CAP_PROP_FOURCC, cv2.VideoWriter_fourcc(*'MJPG'))
-camera.set(cv2.CAP_PROP_FRAME_WIDTH, 640)
-camera.set(cv2.CAP_PROP_FRAME_HEIGHT, 480)
-
 @app.route('/')
 def index():
     """Video streaming home page."""
-    return render_template('camera_tpu.html')
+    return render_template('control.html')
 
 def gen_frames():
+    camera = cv2.VideoCapture(0)
+    # 可尝试设置采集格式为 MJPEG（更兼容）
+    camera.set(cv2.CAP_PROP_FOURCC, cv2.VideoWriter_fourcc(*'MJPG'))
+    camera.set(cv2.CAP_PROP_FRAME_WIDTH, 640)
+    camera.set(cv2.CAP_PROP_FRAME_HEIGHT, 480)
+
     while True:
         success, frame = camera.read()
         #frame = cv2.rotate(frame, cv2.ROTATE_180)
@@ -46,8 +46,6 @@ def gen_frames():
         except Exception as e:
             print(f"[ERROR] Encoding failed: {e}")
 
-        eventlet.sleep(0.01)
- 
 @app.route('/video_feed')
 def video_feed():
     """Video streaming route. Put this in the src attribute of an img tag."""

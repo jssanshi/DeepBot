@@ -48,10 +48,12 @@
       display: flex;
       justify-content: center;
       width: 100%;
-      padding: 10px 10px;
+      padding: 10px;
+      gap: 20px;
+      flex-wrap: wrap;
     }
 
-    .output-box {
+    .output-box, .cockpit-box {
       background-color: #ffffff;
       padding: 10px;
       border-radius: 8px;
@@ -59,7 +61,7 @@
       font-size: 16px;
       color: #333;
       width: 100%;
-      max-width: 800px;
+      max-width: 380px;
     }
 
     .output-title {
@@ -67,6 +69,44 @@
       font-size: 16px;
       color: #333;
       margin-bottom: 10px;
+      text-align: center;
+    }
+
+    .cockpit-controls {
+      position: relative;
+      width: 200px;
+      height: 200px;
+      margin: 0 auto;
+    }
+
+    .cockpit-controls button {
+      position: absolute;
+      width: 60px;
+      height: 30px;
+      border: none;
+      background-color: #4cb3fe;
+      color: white;
+      border-radius: 5px;
+      cursor: pointer;
+    }
+
+    .btn-forward    { top: 0; left: 50%; transform: translateX(-50%); }
+    .btn-backward   { bottom: 0; left: 50%; transform: translateX(-50%); }
+    .btn-left       { top: 50%; left: 0; transform: translateY(-50%); }
+    .btn-right      { top: 50%; right: 0; transform: translateY(-50%); }
+    .btn-rotate     { top: 50%; left: 50%; transform: translate(-50%, -50%); width: 70px; height: 70px; border-radius: 50%; background-color: #28a745; }
+    .btn-emergency-stop {
+      position: absolute;
+      bottom: 0px;
+      right: -75px;
+      width: 70px;
+      height: 35px;
+      color: white;
+      border: none;
+      border-radius: 6px;
+      font-size: 14px;
+      cursor: pointer;
+      box-shadow: 0 2px 5px rgba(0,0,0,0.2);
     }
 
     @media (max-width: 600px) {
@@ -74,7 +114,7 @@
         font-size: 18px;
       }
 
-      .output-box {
+      .output-box, .cockpit-box {
         font-size: 14px;
         padding: 15px;
       }
@@ -82,38 +122,65 @@
       .output-title {
         font-size: 14px;
       }
+
+      .cockpit-controls {
+        width: 150px;
+        height: 150px;
+      }
+
+      .cockpit-controls button {
+        width: 50px;
+        height: 25px;
+      }
+
+      .btn-rotate {
+        width: 60px;
+        height: 60px;
+      }
     }
   </style>
 </head>
 <body>
 
-<!-- 顶部标题 -->
 <div class="header">DeepBot</div>
 
-<!-- 视频流区域 -->
 <div class="video-container">
   <img src="{{ url_for('video_feed') }}" alt="视频流">
 </div>
 
-<!-- 输出区域 -->
 <div class="output-section">
-  <div class="output-box">
-    <div class="output-title">识别物体</div>
-    <div id="model-output">等待识别结果...</div>
+  <!-- 驾驶舱区域 -->
+  <div class="cockpit-box">
+    <div class="output-title">驾驶舱</div>
+    <div class="cockpit-controls">
+      <button class="btn-forward" onclick="sendControlCommand('t_up')">前进</button>
+      <button class="btn-backward" onclick="sendControlCommand('t_down')">后退</button>
+      <button class="btn-left" onclick="sendControlCommand('t_left')">左转</button>
+      <button class="btn-right" onclick="sendControlCommand('t_right')">右转</button>
+      <button class="btn-rotate" onclick="sendControlCommand('t_rotate')">旋转</button>
+      <button class="btn-emergency-stop" onclick="sendControlCommand('t_stop')">停止</button>
+    </div>
   </div>
+
 </div>
 
-<!-- 实时结果拉取 -->
-<!--<script>
-  setInterval(() => {
-    fetch('/model_output')
-            .then(res => res.text())
-            .then(data => {
-              document.getElementById('model-output').innerText = data;
+<script>
+  function sendControlCommand(command) {
+    fetch(`/ctrl/${command}`)
+            .then(response => {
+              if (!response.ok) {
+                throw new Error("网络响应失败");
+              }
+              return response.text();
             })
-            .catch(err => console.error('无法获取识别结果', err));
-  }, 1000);
-</script>-->
+            .then(data => {
+              console.log("控制命令成功:", data);
+            })
+            .catch(error => {
+              console.error("控制命令失败:", error);
+            });
+  }
+</script>
 
 </body>
 </html>

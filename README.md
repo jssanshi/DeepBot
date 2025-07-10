@@ -1,7 +1,21 @@
 # DeepBot
-appCamCV2.py
-appCamCV2_COCO.py
+## 机器人运行 start.py
+1. python3.9环境安装依赖:
 
+    ```
+    pip install -r requirements.txt
+    ```
+2. 将service目录拷贝到树莓派目录下
+3. 切换到service目录下，启动机器人服务:
+
+    ```
+    python start.py
+    ```
+4.  浏览器访问网页，点击对应按钮操作:
+
+    ```
+    http://localhost:8000
+    ```
 ## 实时展示摄像机画面 appCamCV2.py 
 1.  python3.9运行脚本:
 
