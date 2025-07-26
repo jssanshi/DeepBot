@@ -1,0 +1,207 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <title>DeepBot 控制面板</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <style>
+    * {
+      box-sizing: border-box;
+    }
+
+    body {
+      margin: 0;
+      background-color: #000;
+      color: white;
+      font-family: Arial, sans-serif;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      min-height: 100vh;
+      padding: 10px;
+    }
+
+    .header {
+      font-size: 20px;
+      font-weight: bold;
+      padding: 12px;
+      color: #0cf;
+      text-align: center;
+    }
+
+    .video-container {
+      width: 100%;
+      max-width: 400px;
+      aspect-ratio: 4 / 3;
+      overflow: hidden;
+      border: 2px solid #0cf;
+      border-radius: 8px;
+      margin: 10px 0;
+    }
+
+    .video-container img {
+      width: 100%;
+      height: auto;
+      display: block;
+    }
+
+    .status-section {
+      text-align: center;
+      margin: 10px 0;
+    }
+
+    .status-section .connect {
+      background-color: #222;
+      border: 2px solid #0cf;
+      color: #0cf;
+      padding: 6px 16px;
+      border-radius: 8px;
+      font-size: 16px;
+      margin-bottom: 6px;
+      cursor: default;
+    }
+
+    .status-text {
+      font-size: 14px;
+      color: #0f0;
+    }
+
+    .control-pad {
+      margin-top: 16px;
+      width: 200px;
+      height: 200px;
+      position: relative;
+      border: 3px solid red;
+      border-radius: 50%;
+      box-shadow: 0 0 12px red;
+    }
+
+    .control-button {
+      position: absolute;
+      width: 50px;
+      height: 50px;
+      background-color: rgba(255, 0, 0, 0.2);
+      border: 2px solid red;
+      border-radius: 50%;
+      cursor: pointer;
+      box-shadow: 0 0 8px red;
+    }
+
+    .control-button::after {
+      content: '';
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      width: 0;
+      height: 0;
+      border-style: solid;
+      transform: translate(-50%, -50%);
+    }
+
+    .btn-up {
+      top: 5px;
+      left: 50%;
+      transform: translateX(-50%);
+    }
+
+    .btn-up::after {
+      border-width: 0 6px 10px 6px;
+      border-color: transparent transparent red transparent;
+    }
+
+    .btn-down {
+      bottom: 5px;
+      left: 50%;
+      transform: translateX(-50%);
+    }
+
+    .btn-down::after {
+      border-width: 10px 6px 0 6px;
+      border-color: red transparent transparent transparent;
+    }
+
+    .btn-left {
+      top: 50%;
+      left: 5px;
+      transform: translateY(-50%);
+    }
+
+    .btn-left::after {
+      border-width: 6px 10px 6px 0;
+      border-color: transparent red transparent transparent;
+    }
+
+    .btn-right {
+      top: 50%;
+      right: 5px;
+      transform: translateY(-50%);
+    }
+
+    .btn-right::after {
+      border-width: 6px 0 6px 10px;
+      border-color: transparent transparent transparent red;
+    }
+
+    .btn-center {
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      background-color: rgba(0, 255, 0, 0.2);
+      border: 2px solid #0f0;
+      box-shadow: 0 0 8px #0f0;
+    }
+
+    .btn-center::after {
+      content: '⟳';
+      font-size: 16px;
+      color: #0f0;
+    }
+
+    .stop-button {
+      margin-top: 16px;
+      background-color: #c00;
+      color: white;
+      border: none;
+      padding: 10px 20px;
+      font-size: 14px;
+      border-radius: 8px;
+      box-shadow: 0 0 6px red;
+      cursor: pointer;
+    }
+
+  </style>
+</head>
+<body>
+
+<div class="header">DeepBot 控制面板</div>
+
+<div class="video-container">
+  <img src="{{ url_for('video_feed') }}" alt="视频流">
+</div>
+
+<div class="status-section">
+<!--  <div class="connect">🔵 Connected</div>-->
+  <div class="status-text">DeepBot status: OK</div>
+</div>
+
+<div class="control-pad">
+  <div class="control-button btn-up" onclick="sendControlCommand('t_up')"></div>
+  <div class="control-button btn-down" onclick="sendControlCommand('t_down')"></div>
+  <div class="control-button btn-left" onclick="sendControlCommand('t_left')"></div>
+  <div class="control-button btn-right" onclick="sendControlCommand('t_right')"></div>
+  <div class="control-button btn-center" onclick="sendControlCommand('t_rotate')"></div>
+</div>
+
+<button class="stop-button" onclick="sendControlCommand('t_stop')">紧急停止</button>
+
+<script>
+  function sendControlCommand(command) {
+    fetch(`/ctrl/${command}`)
+            .then(res => res.text())
+            .then(console.log)
+            .catch(console.error);
+  }
+</script>
+
+</body>
+</html>
