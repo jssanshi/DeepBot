@@ -1,12 +1,14 @@
 # 摄像机实时画面
 from flask import Flask, render_template, Response
-import cv2
+import cv2, time
 from motor import MotorController
-import time
 
 app = Flask(__name__)
 mot = MotorController()
-SPEED = 21
+SPEED = 15
+
+# 假设你在 gen_frames() 中保存最新帧
+last_frame = None
 
 @app.route('/')
 def index():
@@ -30,11 +32,13 @@ def ctrl(state):
     return 'success'
 
 def gen_frames():
+    global last_frame
+
     camera = cv2.VideoCapture(0)
     # 可尝试设置采集格式为 MJPEG（更兼容）
     camera.set(cv2.CAP_PROP_FOURCC, cv2.VideoWriter_fourcc(*'MJPG'))
-    camera.set(cv2.CAP_PROP_FRAME_WIDTH, 320)
-    camera.set(cv2.CAP_PROP_FRAME_HEIGHT, 240)
+    camera.set(cv2.CAP_PROP_FRAME_WIDTH, 640)
+    camera.set(cv2.CAP_PROP_FRAME_HEIGHT, 480)
 
     while True:
         success, frame = camera.read()
@@ -53,26 +57,34 @@ def gen_frames():
                 frame = cv2.cvtColor(frame, cv2.COLOR_YUV2BGR_YUY2)
 
             # 缩小分辨率避免编码异常
-            frame = cv2.resize(frame, (320, 240), interpolation=cv2.INTER_AREA)
+            frame = cv2.resize(frame, (640, 480), interpolation=cv2.INTER_AREA)
 
             # 编码为 JPEG
-            ret, buffer = cv2.imencode('.jpg', frame, [cv2.IMWRITE_JPEG_QUALITY, 70])
+            ret, buffer = cv2.imencode('.jpg', frame)
             if not ret:
                 continue
 
             yield (b'--frame\r\n'
                    b'Content-Type: image/jpeg\r\n\r\n' + buffer.tobytes() + b'\r\n')
+            last_frame = frame.copy()
 
         except Exception as e:
-            print(f"[ERROR] Encoding failed: {e}")
-
-        time.sleep(0.1)  # 降帧率到约 10 fps
+                print(f"[ERROR] Encoding failed: {e}")
 
 @app.route('/video_feed')
 def video_feed():
     """Video streaming route. Put this in the src attribute of an img tag."""
     return Response(gen_frames(),
                     mimetype='multipart/x-mixed-replace; boundary=frame')
+
+@app.route('/capture')
+def capture():
+    global last_frame
+    if last_frame is not None:
+        filename = f"snapshot_{int(time.time())}.jpg"
+        cv2.imwrite(filename, last_frame)
+        return filename
+    return "No frame available", 400
 
 if __name__ == '__main__':
     app.run(host='0.0.0.0', port =8000, debug=True, threaded=True)
