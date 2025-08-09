@@ -16,8 +16,8 @@ RIGHT_IN2 = 15
 PINS = {"L": {"EN": LEFT_ENB, "IN1": LEFT_IN3, "IN2": LEFT_IN4},
         "R": {"EN": RIGHT_ENA, "IN1": RIGHT_IN1, "IN2": RIGHT_IN2}}
 
-BALANCE_SPEED = 2.5
-INIT_SPEED = 10
+BALANCE_SPEED = 3
+INIT_SPEED = 6
 
 class MotorController(object):
     """GPIO Controller for L298."""
@@ -73,8 +73,8 @@ class MotorController(object):
             time.sleep(duration)
 
     def rotate(self, duration=None, dc=INIT_SPEED):
-        self._reverse("L", dc + BALANCE_SPEED)
-        self._forward("R", dc)
+        self._reverse("L", dc/1.5 + BALANCE_SPEED)
+        self._forward("R", dc/1.5)
         if duration:
             time.sleep(duration)
 

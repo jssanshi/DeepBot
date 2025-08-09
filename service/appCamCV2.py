@@ -7,7 +7,7 @@ app = Flask(__name__)
 @app.route('/')
 def index():
     """Video streaming home page."""
-    return render_template('control.html')
+    return render_template('camera.html')
 
 def gen_frames():
     camera = cv2.VideoCapture(0)

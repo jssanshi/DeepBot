@@ -5,7 +5,7 @@ from motor import MotorController
 
 app = Flask(__name__)
 mot = MotorController()
-SPEED = 15
+SPEED = 18
 
 @app.route('/')
 def index():
